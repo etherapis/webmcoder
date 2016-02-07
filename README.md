@@ -23,6 +23,50 @@ into a format suitable for streaming through the MSE. It should be ble to conver
 most input media streams into the open standard WebM format in a suitable way for
 streaming via the media source extensions.
 
+## Installation and usage
+
+WebMCoder is a [Go](https://golang.org/dl/) tool using [Docker](https://docs.docker.com/engine/installation/)
+images. These must be installed prior to being able to use the encoder.
+
+Installing the Go wrapper can be done via:
+
+```
+$ go get github.com/etherapis/webmcoder
+```
+
+### Usage
+
+In its crudest form, WebMCoder can be invoked to simply convert an input video
+file into a MSE suitable output WebM file. We'll demostrate
+
+```
+$ webmcoder input.ext output.webm
+```
+
+A few video and audio conversion options are also supported:
+
+ * `--achan`: Number of audio channels to generate (0 = same as input)
+ * `--arate`: Audio bitrate to encode the output to (0 = same as input)
+ * `--vrate`: Video bitrate to encode the output to (0 = same as input)
+ * `--vres`: Video resolution (WxH) to encode the output to (empty = same as input)
+
+A full command to recode the [Elephants Dream](https://orange.blender.org/) movie
+for streaming via media source extensions with a bit of reprocessing (mono audio,
+640 x 360 video resolution, 674 kbit/s video bitrate) would be:
+
+*Note, the Elephants Dream HD is a 815MB download!*
+
+```
+$ curl -L -O http://video.blendertestbuilds.de/download.blender.org/ED/ED_HD.avi
+$ webmcoder --achan=1 --vres=640x360 --vrate=691200 ./ED_HD.avi ./elephants-dream.webm
+
+... Approximately 10 mins later ...
+
+$ ls -al
+-rw-r-----  1 karalabe karalabe 854537054 Feb  7 18:00 ED_HD.avi
+-rw-r--r--  1 root     root      60962855 Feb  7 18:10 elephants-dream.webm
+```
+
 ## Credits
 
 The conversion tool is based on:

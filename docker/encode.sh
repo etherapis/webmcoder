@@ -14,11 +14,11 @@
 set -e
 
 # Generate the ffmpeg option strings based on the env vars
-if [ "$AUDIO_CHANNELS" != "" ]; then
+if [ "$AUDIO_CHANNELS" != "" ] && [ "$AUDIO_CHANNELS" != "0" ] ; then
   channels="-ac $AUDIO_CHANNELS"
 fi
 
-if [ "$AUDIO_BITRATE" != "" ]; then
+if [ "$AUDIO_BITRATE" != "" ] && [ "$AUDIO_BITRATE" != "0" ]; then
   audiorate="-b:a $AUDIO_BITRATE"
 fi
 
@@ -26,7 +26,7 @@ if [ "$VIDEO_RESOLUTION" != "" ]; then
   resolution="-s $VIDEO_RESOLUTION"
 fi
 
-if [ "$VIDEO_BITRATE" != "" ]; then
+if [ "$VIDEO_BITRATE" != "" ] && [ "$VIDEO_BITRATE" != "0" ]; then
   videorate="-b:v $VIDEO_BITRATE"
 fi
 
