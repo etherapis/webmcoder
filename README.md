@@ -64,7 +64,7 @@ $ webmcoder --achan=1 --vres=640x360 --vrate=691200 ./ED_HD.avi ./elephants-drea
 
 $ ls -al
 -rw-r-----  1 karalabe karalabe 854537054 Feb  7 18:00 ED_HD.avi
--rw-r--r--  1 root     root      60962855 Feb  7 18:10 elephants-dream.webm
+-rw-r--r--  1 karalabe karalabe 60962855 Feb  7 18:10 elephants-dream.webm
 ```
 
 ## Credits

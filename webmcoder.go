@@ -13,6 +13,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"strings"
 )
@@ -116,6 +117,10 @@ func encode(image string, config *EncodeFlags, input, output string) error {
 	// Assemble and run the cross compilation command
 	fmt.Printf("WebMCoding %s -> %s...\n", input, output)
 
+	user, err := user.Current()
+	if err != nil {
+		return err
+	}
 	inputPath, err := filepath.Abs(input)
 	if err != nil {
 		return err
@@ -133,6 +138,7 @@ func encode(image string, config *EncodeFlags, input, output string) error {
 		"-e", fmt.Sprintf("AUDIO_BITRATE=%d", config.AudioBitrate),
 		"-e", fmt.Sprintf("VIDEO_RESOLUTION=%s", config.VideoResolution),
 		"-e", fmt.Sprintf("VIDEO_BITRATE=%d", config.VideoBitrate),
+		"-u", fmt.Sprintf("%s:%s", user.Uid, user.Gid),
 	}
 	args = append(args, []string{image, filepath.Base(inputPath), filepath.Base(outputPath)}...)
 	return run(exec.Command("docker", args...))
