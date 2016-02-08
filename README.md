@@ -19,7 +19,7 @@ limited video/audio codec support, the need for specialized stream segmentation,
 half baked implementations requiring various hacks to work around.
 
 WebMCoder is a tiny tool to solve the painful problem of converting a video file
-into a format suitable for streaming through the MSE. It should be ble to convert
+into a format suitable for streaming through the MSE. It should be able to convert
 most input media streams into the open standard WebM format in a suitable way for
 streaming via the media source extensions.
 
@@ -37,7 +37,7 @@ $ go get github.com/etherapis/webmcoder
 ### Usage
 
 In its crudest form, WebMCoder can be invoked to simply convert an input video
-file into a MSE suitable output WebM file. We'll demostrate
+file into a MSE suitable output WebM file:
 
 ```
 $ webmcoder input.ext output.webm
@@ -65,6 +65,55 @@ $ webmcoder --achan=1 --vres=640x360 --vrate=691200 ./ED_HD.avi ./elephants-drea
 $ ls -al
 -rw-r-----  1 karalabe karalabe 854537054 Feb  7 18:00 ED_HD.avi
 -rw-r--r--  1 karalabe karalabe 60962855 Feb  7 18:10 elephants-dream.webm
+```
+
+### Embedding
+
+Just to provide a rough sketch on how to embed the above generated media stream
+into a webpage, first an HTML5 `video` element is needed.
+
+```html
+<video id="videosink" width="640" height="360" controls>
+  <source src="" type="video/webm">Your browser does not support the video tag.
+</video>
+```
+
+After which we need to retrieve our video stream chunks from some arbitrary data
+source, and assemble them into a `MediaSource` element. Please note, the below
+code is only pseudocode highlighting the stream parts, the rest is up to the user
+to implement.
+
+```js
+// Create a new media source to fill with the video stream
+var player = document.getElementById("videosink");
+var source = new MediaSource;
+
+source.addEventListener('sourceopen', function() {
+  // Media source ready, create a video buffer and an async queue to fill with data
+  var queue  = [];
+
+  var buffer = source.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+  buffer.addEventListener('updateend', function() {
+    if (queue.length > 0) {
+      buffer.appendBuffer(queue.shift());
+    }
+  }, false);
+
+  // Start downloading the video stream, inserting either into the queue or the buffer
+  while (!complete) {
+    var chunk = downloadNextChunk();
+
+    // Queue up the next chunk or insert directly
+    if (queue.length > 0 || buffer.updating) {
+      queue.push(data);
+    } else {
+      buffer.appendBuffer(data);
+    }
+  }
+});
+
+// Initialize the video player with the chunked stream source
+player.src = URL.createObjectURL(source);
 ```
 
 ## Credits
